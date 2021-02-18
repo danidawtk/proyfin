@@ -8,9 +8,7 @@ use \Firebase\JWT\JWT;
 //Guardamos la url para buscar el controlador y ponemos mensaje de bienvenida.
 if(!isset($_GET['url'])) {
   exit(json_encode(["Bienvenido al Backend con routes"]));
-}
-
-$url = $_GET['url'];
+} else $url = $_GET['url'];
 
 //Preparamos la conexion con la base de datos
 $bd = new db();
@@ -23,6 +21,12 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])) {
   try {
     $JWTraw = JWT::decode($jwt, $bd->getClave(), array('HS256'));
     $idUser = $JWTraw->id;
+
+    //Aun pasando el proceso de verificación JWT se comprueba si en la base de datos existe el usuario.
+    $peticion = $conexion->prepare("SELECT id FROM users WHERE id = ?");
+    $peticion->execute([$idUser]);
+    if($peticion->rowCount() == 0) $idUser = null;
+
   } catch (Exception $e) { }
 }
 
@@ -50,7 +54,6 @@ switch($control[0]) {
             break;
         }
         break;
-
       case "POST":
         switch($control[1]) {
           case "login":
@@ -63,11 +66,9 @@ switch($control[0]) {
             $user->registrarUser();
         }
         break;
-
       case "PUT":
         $user->editarUser();
         break;
-
       case "DELETE":
         $user->eliminarUser();
         break;
@@ -83,19 +84,15 @@ switch($control[0]) {
       case "GET":
         $notas->obtenerNotas();
         break;
-
       case "POST":
         $notas->publicarNota();
         break;
-
       case "PUT":
         $notas->editarNota();
         break;
-
       case "DELETE":
         $notas->eliminarNota($control[1]);
         break;
-
       default: exit(json_encode(["Bienvenido al Backend con routes"]));
     }
     break;
@@ -105,10 +102,16 @@ switch($control[0]) {
       $mensajes = new MensajesController($conexion);
       switch(METODO){
         case "GET":
-          $mensajes->leerMensajes();
+          if(isset($control[1]) && $control[1] == "sent")
+            $mensajes->leerEnviados();
+          else
+            $mensajes->leerRecibidos();
           break;
         case "POST":
           $mensajes->enviarMensaje();
+          break;
+        case "PUT":
+          $mensajes->editarMensaje();
           break;
         case "DELETE":
           $mensajes->eliminarMensaje($control[1]);

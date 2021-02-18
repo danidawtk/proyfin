@@ -38,9 +38,19 @@ Rutas actualmente implementadas organizadas por método y funcionalidad.
 | **POST** |_localhost/backendphp/user/_| Registrar un usuario nuevo | Innecesario |
 | **PUT** |_localhost/backendphp/user/_| Actualizar la información del usuario JWT | Obligatorio |
 | **DELETE** |_localhost/backendphp/user/_|Eliminar el usuario JWT | Obligatorio |
-| **POST** |_localhost/backendphp/user/login_| Hace Login con la información recibida | Innecesario |
-| **POST** |_localhost/backendphp/user/image_| Sube una imagen de perfil del usuario | Obligatorio |
-| **GET** |_localhost/backendphp/user/list_| Muestra información de otros usuarios | Obligatorio |
+| **POST** |_localhost/backendphp/user/login_| Hacer Login con la información recibida | Innecesario |
+| **POST** |_localhost/backendphp/user/image_| Subir una imagen de perfil del usuario | Obligatorio |
+| **GET** |_localhost/backendphp/user/list_| Mostrar información de otros usuarios | Obligatorio |
+
+#### Rutas relacionadas con los mensajes:
+
+| Método | Ruta | Acción | Requiere JWT |
+| :---: | --- | --- | :---: |
+| **GET** |_localhost/backendphp/mensajes/_| Obtener los mensajes recibidos | Obligatorio |
+| **GET** |_localhost/backendphp/mensajes/sent_| Obtener los mensajes enviados | Obligatorio |
+| **POST** |_localhost/backendphp/mensajes/_| Enviar un mensaje a un usuario | Obligatorio |
+| **PUT** |_localhost/backendphp/mensajes/_| Actualizar un mensaje enviado | Obligatorio |
+| **DELETE** |_localhost/backendphp/mensajes/id_| Eliminar un mensaje recibido | Obligatorio |
 
 #### Códigos de respuesta del servidor:
 

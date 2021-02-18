@@ -45,9 +45,11 @@ class NotasController {
       }
       $eval = "UPDATE notas SET titulo=?, contenido=? WHERE id=? AND idUser=?";
       $peticion = $this->db->prepare($eval);
-      $resultado = $peticion->execute([$nota->titulo,$nota->contenido,$nota->id,IDUSER]);
+      $peticion->execute([$nota->titulo,$nota->contenido,$nota->id,IDUSER]);
       http_response_code(201);
-      exit(json_encode("Nota actualizada correctamente"));
+      //Comprobamos si se ha eliminado la nota e informarnos en la respuesta.
+      if($peticion->rowCount()) exit(json_encode("Se ha actualizado la nota"));
+      else exit(json_encode("La nota no se ha actualizado"));
     } else {
       http_response_code(401);
       exit(json_encode(["error" => "Fallo de autorizacion"]));        
@@ -62,9 +64,11 @@ class NotasController {
     if(IDUSER) {
       $eval = "DELETE FROM notas WHERE id=? AND idUser=?";
       $peticion = $this->db->prepare($eval);
-      $resultado = $peticion->execute([$id,IDUSER]);
+      $peticion->execute([$id,IDUSER]);
       http_response_code(200);
-      exit(json_encode("Nota eliminada correctamente"));
+      //Comprobamos si se ha eliminado la nota e informarnos en la respuesta.
+      if($peticion->rowCount()) exit(json_encode("Nota eliminada correctamente"));
+      else exit(json_encode("La nota no se ha podido eliminar"));
     } else {
       http_response_code(401);
       exit(json_encode(["error" => "Fallo de autorizacion"]));            
