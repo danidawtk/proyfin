@@ -13,7 +13,7 @@ class UserController {
   public function listarUser() {
     //Comprueba si el usuario esta registrado.
     if(IDUSER) {
-      $eval = "SELECT id,nombre,apellidos,email,telefono,imgSrc FROM users";
+      $eval = "SELECT nombre,apellidos,poblacion,provincia,email,telefono FROM usuarios";
       $peticion = $this->db->prepare($eval);
       $peticion->execute();
       $resultado = $peticion->fetchAll(PDO::FETCH_OBJ);
@@ -26,7 +26,7 @@ class UserController {
 
   public function leerPerfil() {
     if(IDUSER) {
-      $eval = "SELECT nombre,apellidos,email,telefono,dni,imgSrc FROM users WHERE id=?";
+      $eval = "SELECT nombre,apellidos,poblacion,provincia,email,telefono,foto FROM usuarios WHERE id=?";
       $peticion = $this->db->prepare($eval);
       $peticion->execute([IDUSER]);
       $resultado = $peticion->fetchObject();
@@ -47,7 +47,7 @@ class UserController {
     }
   
     //Primero busca si existe el usuario, si existe que obtener el id y la password.
-    $peticion = $this->db->prepare("SELECT id,password FROM users WHERE email = ?");
+    $peticion = $this->db->prepare("SELECT id,password FROM usuarios WHERE email = ?");
     $peticion->execute([$user->email]);
     $resultado = $peticion->fetchObject();
   
@@ -115,7 +115,7 @@ class UserController {
           //Prepara el contenido del campo imgSrc
           $imgSRC = "http://localhost/".basename(ROOT)."/images/".$nombreFoto;
   
-          $eval = "UPDATE users SET imgSrc=? WHERE id=?";
+          $eval = "UPDATE usuarios SET foto=? WHERE id=?";
           $peticion = $this->db->prepare($eval);
           $peticion->execute([$imgSRC,IDUSER]);
   
@@ -137,25 +137,27 @@ class UserController {
     $user = json_decode(file_get_contents("php://input"));
 
     //Comprobamos que los datos sean consistentes.
-    if(!isset($user->email) || !isset($user->password)|| !isset($user->dni)) {
+    if(!isset($user->email) || !isset($user->password)) {
       http_response_code(400);
       exit(json_encode(["error" => "No se han enviado todos los parametros"]));
 
     }
     if(!isset($user->nombre)) $user->nombre = null;
     if(!isset($user->apellidos)) $user->apellidos = null;
+    if(!isset($user->poblacion)) $user->poblacion = null;
+    if(!isset($user->provincia)) $user->provincia = null;
     if(!isset($user->telefono)) $user->telefono = null;
 
     //Comprueba que no exista otro usuario con el mismo email.
-    $peticion = $this->db->prepare("SELECT id FROM users WHERE email=?");
+    $peticion = $this->db->prepare("SELECT id FROM usuarios WHERE email=?");
     $peticion->execute([$user->email]);
     $resultado = $peticion->fetchObject();
     if(!$resultado) {
       $password = password_hash($user->password, PASSWORD_BCRYPT);
-      $eval = "INSERT INTO users (nombre,apellidos,password,email,telefono,dni) VALUES (?,?,?,?,?,?)";
+      $eval = "INSERT INTO usuarios (nombre,apellidos,poblacion,provincia,password,email,telefono) VALUES (?,?,?,?,?,?,?)";
       $peticion = $this->db->prepare($eval);
       $peticion->execute([
-        $user->nombre,$user->apellidos,$password,$user->email,$user->telefono,$user->dni
+        $user->nombre,$user->apellidos,$user->poblacion,$user->provincia,$password,$user->email,$user->telefono
       ]);
       
       //Preparamos el token.

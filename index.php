@@ -23,7 +23,7 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])) {
     $idUser = $JWTraw->id;
 
     //Aun pasando el proceso de verificación JWT se comprueba si en la base de datos existe el usuario.
-    $peticion = $conexion->prepare("SELECT id FROM users WHERE id = ?");
+    $peticion = $conexion->prepare("SELECT id FROM usuarios WHERE id = ?");
     $peticion->execute([$idUser]);
     if($peticion->rowCount() == 0) $idUser = null;
 
@@ -120,6 +120,27 @@ switch($control[0]) {
       }
       break;
       
+
+    case "anuncios":
+      require_once("controllers/anuncios.controller.php");
+      $anuncio = new AnunciosController($conexion);
+      switch(METODO){
+	case "GET":
+        switch($control[1]) {
+          case "list":
+            $anuncio->listarAnuncio();
+            break;
+        }
+        break;
+        case "POST":
+	       case "":
+          $anuncio->enviarAnuncio();
+          break;
+        default: exit(json_encode(["Bienvenido al Backend con routes"]));
+      }
+      break;
+
+
     default:
     exit(json_encode(["Bienvenido al Backend con routes"]));
 }
