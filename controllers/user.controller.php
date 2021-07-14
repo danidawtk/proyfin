@@ -187,7 +187,7 @@ class UserController {
       
       //Comprobamos si existe otro usuario con ese correo electronico.
       if(isset($user->email)) {
-        $peticion = $this->db->prepare("SELECT id FROM users WHERE email=?");
+        $peticion = $this->db->prepare("SELECT id FROM usuarios WHERE email=?");
         $peticion->execute([$user->email]);
         $resultado = $peticion->fetchObject();
         
@@ -202,7 +202,7 @@ class UserController {
       }
 
       //Obtenemos los datos guardados en el servidor relacionados con el usuario
-      $peticion = $this->db->prepare("SELECT nombre,apellidos,email,telefono FROM users WHERE id=?");
+      $peticion = $this->db->prepare("SELECT nombre,apellidos,email,telefono FROM usuarios WHERE id=?");
       $peticion->execute([IDUSER]);
       $resultado = $peticion->fetchObject();
 
@@ -218,11 +218,11 @@ class UserController {
         //Encriptamos la contraseña.
         $nPassword = password_hash($user->password, PASSWORD_BCRYPT);
         //Preparamos la petición.
-        $eval = "UPDATE users SET nombre=?,apellidos=?,password=?,email=?,telefono=? WHERE id=?";
+        $eval = "UPDATE usuarios SET nombre=?,apellidos=?,password=?,email=?,telefono=? WHERE id=?";
         $peticion = $this->db->prepare($eval);
         $peticion->execute([$nNombre,$nApellidos,$nPassword,$nEmail,$nTelefono,IDUSER]);
       } else {
-        $eval = "UPDATE users SET nombre=?,apellidos=?,email=?,telefono=? WHERE id=?";
+        $eval = "UPDATE usuarios SET nombre=?,apellidos=?,email=?,telefono=? WHERE id=?";
         $peticion = $this->db->prepare($eval);
         $peticion->execute([$nNombre,$nApellidos,$nEmail,$nTelefono,IDUSER]);        
       }
@@ -243,7 +243,7 @@ class UserController {
       foreach($imgFile as $fichero) unlink($fichero);
 
       //Preparamos la peticion de eliminar usuario de la base de datos.
-      $eval = "DELETE FROM users WHERE id=?";
+      $eval = "DELETE FROM usuarios WHERE id=?";
       $peticion = $this->db->prepare($eval);
       $peticion->execute([IDUSER]);
       http_response_code(200);

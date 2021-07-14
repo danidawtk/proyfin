@@ -22,7 +22,6 @@ class AnunciosController {
         $anuncio->titulo,$anuncio->texto,$anuncio->precio
       ]);
       
-      
       http_response_code(201);
       exit(json_encode("Mensaje enviado correctamente"));
     }
