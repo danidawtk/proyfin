@@ -16,10 +16,10 @@ class AnunciosController {
     if(IDUSER){
       $anuncio = json_decode(file_get_contents("php://input"));
       
-      $eval = 'INSERT INTO anuncio (titulo,texto,precio) VALUES (?,?,?)';
+      $eval = 'INSERT INTO anuncio (titulo,texto,precio,idanunciante) VALUES (?,?,?,?)';
       $peticion = $this->db->prepare($eval);
       $peticion->execute([
-        $anuncio->titulo,$anuncio->texto,$anuncio->precio
+        $anuncio->titulo,$anuncio->texto,$anuncio->precio,$anuncio->idanunciante
       ]);
       
       http_response_code(201);
@@ -32,7 +32,7 @@ class AnunciosController {
   }
     public function listarAnuncio() {
     
-      $eval = "SELECT titulo,texto,precio,fecha,idanunciante FROM anuncio ORDER BY fecha DESC";
+      $eval = "SELECT DISTINCT * FROM anuncio,usuarios WHERE anuncio.idanunciante=usuarios.id ORDER BY fecha DESC ";
       $peticion = $this->db->prepare($eval);
       $peticion->execute();
       $resultado = $peticion->fetchAll(PDO::FETCH_OBJ);
@@ -45,7 +45,8 @@ class AnunciosController {
         $busqueda = null;
       if(!empty($_GET["busqueda"])) $busqueda = $_GET["busqueda"];
       
-      $eval = "SELECT * FROM anuncio";
+      $eval = "SELECT titulo,texto,precio,fecha,idanunciante FROM anuncio ORDER BY fecha DESC";
+      //$eval = "SELECT * FROM anuncio";
       
       $eval .= $busqueda ? " AND CONCAT_WS(titulo,texto,precio) LIKE '%".$busqueda."%'" : null;
 
